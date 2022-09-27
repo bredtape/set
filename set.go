@@ -26,19 +26,40 @@ func NewValues[T comparable](xs ...T) Set[T] {
 }
 
 // alter
+
+// add elements from list
 func (set Set[T]) Add(xs ...T) {
 	for _, x := range xs {
 		set[x] = struct{}{}
 	}
 }
 
+// add elements from other set
+func (set Set[T]) AddSets(sets ...Set[T]) {
+	for _, other := range sets {
+		for x := range other {
+			set[x] = struct{}{}
+		}
+	}
+}
+
+// remove elements from list
 func (set Set[T]) Remove(xs ...T) {
 	for _, x := range xs {
 		delete(set, x)
 	}
 }
 
-// queries
+// remove elements from other sets
+func (set Set[T]) RemoveSets(sets ...Set[T]) {
+	for _, other := range sets {
+		for x := range other {
+			delete(set, x)
+		}
+	}
+}
+
+// create deep copy
 func (set Set[T]) Copy() Set[T] {
 	set2 := New[T](len(set))
 	for x := range set {
@@ -47,15 +68,19 @@ func (set Set[T]) Copy() Set[T] {
 	return set2
 }
 
+// number of elements
 func (set Set[T]) Count() int {
 	return len(set)
 }
 
+// whether the set contains any elements
 func (set Set[T]) Any() bool {
 	return len(set) != 0
 }
 
-func (set Set[T]) Has(xs ...T) bool {
+// whether the set contains all of the listed items.
+// a set always contains the empty set
+func (set Set[T]) Contains(xs ...T) bool {
 	for _, x := range xs {
 		if _, exists := set[x]; !exists {
 			return false
@@ -86,7 +111,7 @@ func (set1 Set[T]) IsSubset(set2 Set[T]) bool {
 		return false
 	}
 	for x := range set2 {
-		if !set1.Has(x) {
+		if !set1.Contains(x) {
 			return false
 		}
 	}
@@ -95,6 +120,18 @@ func (set1 Set[T]) IsSubset(set2 Set[T]) bool {
 
 func (set1 Set[T]) Equals(set2 Set[T]) bool {
 	return len(set1) == len(set2) && set1.IsSubset(set2)
+}
+
+// intersect returns the common values in both set1 and set2
+func (set1 Set[T]) Intersect(set2 Set[T]) Set[T] {
+	same := New[T](len(set1))
+
+	for k := range set2 {
+		if set1.Contains(k) {
+			same.Add(k)
+		}
+	}
+	return same
 }
 
 // Diff returns a triple of sets
@@ -106,7 +143,7 @@ func (set1 Set[T]) Diff(set2 Set[T]) (less, same, more Set[T]) {
 	less, same, more = New[T](0), New[T](len(set1)), New[T](0)
 
 	for k := range set2 {
-		if set1.Has(k) {
+		if set1.Contains(k) {
 			same.Add(k)
 		} else {
 			more.Add(k)
@@ -114,7 +151,7 @@ func (set1 Set[T]) Diff(set2 Set[T]) (less, same, more Set[T]) {
 	}
 
 	for k := range set1 {
-		if !same.Has(k) {
+		if !same.Contains(k) {
 			less.Add(k)
 		}
 	}

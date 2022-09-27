@@ -35,7 +35,7 @@ var testCases = []testCase{
 func TestHas(t *testing.T) {
 	for i, c := range testCases {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
-			if c.init.Has(c.query.ToSlice()...) != c.expected {
+			if c.init.Contains(c.query.ToSlice()...) != c.expected {
 				t.Fail()
 			}
 		})
