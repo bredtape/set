@@ -2,14 +2,19 @@ package set
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"gopkg.in/yaml.v3"
 )
 
-func (set *Set[T]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(set.ToSlice())
+// Marshal to JSON array. The keys will be sorted
+func (set Set[T]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(set.ToSortedSlice(func(x, y T) bool {
+		return fmt.Sprint(x) < fmt.Sprint(y)
+	}))
 }
 
+// Unmarshal from JSON array
 func (set *Set[T]) UnmarshalJSON(data []byte) error {
 	var keys []T
 	err := json.Unmarshal(data, &keys)
@@ -21,13 +26,19 @@ func (set *Set[T]) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (set *Set[T]) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(set.ToSlice())
+// Marshal to YAML array. The keys will be sorted
+// https://pkg.go.dev/gopkg.in/yaml.v3 MarshalYAML interface
+func (set Set[T]) MarshalYAML() (interface{}, error) {
+	return set.ToSortedSlice(func(x, y T) bool {
+		return fmt.Sprint(x) < fmt.Sprint(y)
+	}), nil
 }
 
-func (set *Set[T]) UnmarshalYAML(data []byte) error {
+// Unmarshal from YAML array
+// https://pkg.go.dev/gopkg.in/yaml.v3 UnmarshalYAML interface
+func (set *Set[T]) UnmarshalYAML(value *yaml.Node) error {
 	var keys []T
-	err := yaml.Unmarshal(data, &keys)
+	err := value.Decode(&keys)
 	if err != nil {
 		return err
 	}

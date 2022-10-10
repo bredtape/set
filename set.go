@@ -106,6 +106,15 @@ func (set Set[T]) ToSlice() []T {
 	return keys
 }
 
+func (set Set[T]) ToSortedSlice(less func(T, T) bool) []T {
+	keys := set.ToSlice()
+
+	sort.Slice(keys, func(i, j int) bool {
+		return less(keys[i], keys[j])
+	})
+	return keys
+}
+
 func (set1 Set[T]) IsSubset(set2 Set[T]) bool {
 	if len(set1) < len(set2) {
 		return false
