@@ -115,12 +115,13 @@ func (set Set[T]) ToSortedSlice(less func(T, T) bool) []T {
 	return keys
 }
 
-func (set1 Set[T]) IsSubset(set2 Set[T]) bool {
-	if len(set1) < len(set2) {
+// is set1 a subset of set2?
+func (set1 Set[T]) IsSubsetOf(set2 Set[T]) bool {
+	if len(set1) > len(set2) {
 		return false
 	}
-	for x := range set2 {
-		if !set1.Contains(x) {
+	for x := range set1 {
+		if !set2.Contains(x) {
 			return false
 		}
 	}
@@ -128,7 +129,7 @@ func (set1 Set[T]) IsSubset(set2 Set[T]) bool {
 }
 
 func (set1 Set[T]) Equals(set2 Set[T]) bool {
-	return len(set1) == len(set2) && set1.IsSubset(set2)
+	return len(set1) == len(set2) && set1.IsSubsetOf(set2)
 }
 
 // intersect returns the common values in both set1 and set2

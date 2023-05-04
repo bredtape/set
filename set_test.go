@@ -78,3 +78,24 @@ func TestDiff(t *testing.T) {
 		})
 	}
 }
+
+func TestIsSubset(t *testing.T) {
+	cases := []testCase{
+		{NewValues[int](), NewValues[int](), true},
+		{NewValues(1), NewValues(1), true},
+		{NewValues(1), NewValues(1, 2), true},
+		{NewValues(1), NewValues(2), false},
+		{NewValues(1, 2), NewValues(1), false},
+		{NewValues(3), NewValues(1, 2), false},
+	}
+
+	for i, c := range cases {
+		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
+			t.Logf("Should %s be a subset of %s, %t", c.init.String(), c.query.String(), c.expected)
+			actual := c.init.IsSubsetOf(c.query)
+			if actual != c.expected {
+				t.Errorf("expected %t, but was %t", c.expected, actual)
+			}
+		})
+	}
+}
