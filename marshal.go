@@ -3,14 +3,15 @@ package set
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
 // Marshal to JSON array. The keys will be sorted
 func (set Set[T]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(set.ToSortedSlice(func(x, y T) bool {
-		return fmt.Sprint(x) < fmt.Sprint(y)
+	return json.Marshal(set.ToSortedSlice(func(x, y T) int {
+		return strings.Compare(fmt.Sprint(x), fmt.Sprint(y))
 	}))
 }
 
@@ -29,8 +30,8 @@ func (set *Set[T]) UnmarshalJSON(data []byte) error {
 // Marshal to YAML array. The keys will be sorted
 // https://pkg.go.dev/gopkg.in/yaml.v3 MarshalYAML interface
 func (set Set[T]) MarshalYAML() (interface{}, error) {
-	return set.ToSortedSlice(func(x, y T) bool {
-		return fmt.Sprint(x) < fmt.Sprint(y)
+	return set.ToSortedSlice(func(x, y T) int {
+		return strings.Compare(fmt.Sprint(x), fmt.Sprint(y))
 	}), nil
 }
 

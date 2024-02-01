@@ -2,7 +2,7 @@ package set
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
 )
 
@@ -94,7 +94,7 @@ func (set Set[T]) String() string {
 	for k := range set {
 		keys = append(keys, fmt.Sprint(k))
 	}
-	sort.Strings(keys)
+	slices.Sort(keys)
 	return "[" + strings.Join(keys, ", ") + "]"
 }
 
@@ -106,12 +106,9 @@ func (set Set[T]) ToSlice() []T {
 	return keys
 }
 
-func (set Set[T]) ToSortedSlice(less func(T, T) bool) []T {
+func (set Set[T]) ToSortedSlice(cmp func(T, T) int) []T {
 	keys := set.ToSlice()
-
-	sort.Slice(keys, func(i, j int) bool {
-		return less(keys[i], keys[j])
-	})
+	slices.SortFunc(keys, cmp)
 	return keys
 }
 
