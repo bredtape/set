@@ -59,6 +59,16 @@ func (set Set[T]) RemoveSets(sets ...Set[T]) {
 	}
 }
 
+// pop a random element from the set
+// panics if the set is empty
+func (set Set[T]) Pop() T {
+	for k := range set {
+		delete(set, k)
+		return k
+	}
+	panic("empty set")
+}
+
 // create deep copy
 func (set Set[T]) Copy() Set[T] {
 	set2 := New[T](len(set))
