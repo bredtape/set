@@ -29,7 +29,7 @@ func (set *Set[T]) UnmarshalJSON(data []byte) error {
 
 // Marshal to YAML array. The keys will be sorted
 // https://pkg.go.dev/gopkg.in/yaml.v3 MarshalYAML interface
-func (set Set[T]) MarshalYAML() (interface{}, error) {
+func (set Set[T]) MarshalYAML() (any, error) {
 	return set.ToSortedSlice(func(x, y T) int {
 		return strings.Compare(fmt.Sprint(x), fmt.Sprint(y))
 	}), nil
