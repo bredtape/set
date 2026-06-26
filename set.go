@@ -66,7 +66,9 @@ func (set Set[T]) Pop() (T, bool) {
 		delete(set, k)
 		return k, true
 	}
-return new(T), false
+
+	var x T
+	return x, false
 }
 
 // create deep copy
